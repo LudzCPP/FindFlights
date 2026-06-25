@@ -9,6 +9,26 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react':   ['react', 'react-dom'],
+          'vendor-motion':  ['framer-motion'],
+          'vendor-charts':  ['recharts'],
+          'vendor-radix':   [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-select',
+            '@radix-ui/react-popover',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-separator',
+            '@radix-ui/react-tooltip',
+          ],
+        },
+      },
+    },
+  },
   server: {
     proxy: {
       // All /tp-api/* requests are forwarded to Travelpayouts, solving CORS in dev.

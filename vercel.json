@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/tp-api/:path*",
+      "destination": "https://api.travelpayouts.com/:path*"
+    }
+  ]
+}
