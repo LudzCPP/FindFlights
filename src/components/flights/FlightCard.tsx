@@ -8,28 +8,31 @@ import { FlightModal } from './FlightModal'
 import { formatDuration, formatPrice, cn } from '@/lib/utils'
 import type { Flight } from '@/types'
 
-interface FlightCardProps {
-  flight: Flight
-  index: number
+// Stagger item variant — initial/animate inherited from FlightResults container
+export const flightItemVariants = {
+  hidden: { opacity: 0, y: 16 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.3 } },
 }
 
-export function FlightCard({ flight, index }: FlightCardProps) {
-  const [modalOpen, setModalOpen] = useState(false)
+interface FlightCardProps {
+  flight: Flight
+}
 
+export function FlightCard({ flight }: FlightCardProps) {
+  const [modalOpen, setModalOpen] = useState(false)
   const isSuperDeal = flight.dealRating === 'super'
 
   return (
     <>
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: index * 0.06 }}
+        variants={flightItemVariants}
+        whileHover={{ y: -3, transition: { duration: 0.15 } }}
+        whileTap={{ scale: 0.99 }}
         className={cn(
-          'group relative rounded-2xl border bg-surface transition-all duration-200 hover:border-zinc-600 hover:-translate-y-0.5 hover:shadow-glass',
+          'group relative rounded-2xl border bg-surface hover:border-zinc-600 hover:shadow-glass transition-colors duration-200',
           isSuperDeal ? 'border-emerald-500/30' : 'border-border',
         )}
       >
-        {/* Super deal glow */}
         {isSuperDeal && (
           <div className="absolute inset-0 rounded-2xl bg-emerald-500/3 pointer-events-none" />
         )}
@@ -49,30 +52,30 @@ export function FlightCard({ flight, index }: FlightCardProps) {
             {/* Airline */}
             <div className="flex items-center gap-3 sm:w-36 shrink-0">
               <div
-                className="flex h-10 w-10 items-center justify-center rounded-xl text-white text-xs font-bold shadow-sm"
+                className="flex h-10 w-10 items-center justify-center rounded-xl text-white text-xs font-bold shadow-sm shrink-0"
                 style={{ background: flight.airline.logoColor }}
               >
                 {flight.airline.code}
               </div>
-              <div className="hidden sm:block">
-                <p className="text-xs font-medium text-white leading-tight">{flight.airline.name}</p>
+              <div className="hidden sm:block min-w-0">
+                <p className="text-xs font-medium text-white leading-tight truncate">{flight.airline.name}</p>
                 <p className="text-xs text-zinc-500">{flight.flightNumber}</p>
               </div>
             </div>
 
             {/* Route & times */}
-            <div className="flex flex-1 items-center gap-3">
+            <div className="flex flex-1 items-center gap-3 min-w-0">
               <div className="text-center min-w-[52px]">
                 <p className="text-lg font-bold text-white">{flight.departureTime}</p>
                 <p className="text-xs text-zinc-400 font-medium">{flight.origin.code}</p>
               </div>
 
-              <div className="flex flex-col items-center gap-0.5 flex-1">
+              <div className="flex flex-col items-center gap-0.5 flex-1 min-w-0">
                 <span className="text-xs text-zinc-600">{formatDuration(flight.durationMinutes)}</span>
                 <div className="relative w-full flex items-center">
                   <div className="h-px flex-1 bg-border" />
                   {flight.stops === 0 ? (
-                    <Plane className="h-3 w-3 text-zinc-600 rotate-90 mx-1" />
+                    <Plane className="h-3 w-3 text-zinc-600 rotate-90 mx-1 shrink-0" />
                   ) : (
                     <div className="flex gap-0.5 mx-1">
                       {Array.from({ length: flight.stops }).map((_, i) => (
@@ -82,7 +85,7 @@ export function FlightCard({ flight, index }: FlightCardProps) {
                   )}
                   <div className="h-px flex-1 bg-border" />
                 </div>
-                <span className="text-xs text-zinc-600">
+                <span className="text-xs text-zinc-600 text-center">
                   {flight.stops === 0 ? 'bezpośredni' : `${flight.stops} przesiadka`}
                 </span>
               </div>
@@ -94,24 +97,25 @@ export function FlightCard({ flight, index }: FlightCardProps) {
             </div>
 
             {/* Price & CTA */}
-            <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 sm:w-36 shrink-0">
+            <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 sm:w-36 shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-border">
               <div className="text-right">
                 {flight.priceDropPln > 0 && (
                   <p className="text-xs text-zinc-500 line-through">
                     {formatPrice(flight.averagePrice30d)}
                   </p>
                 )}
-                <p className={cn(
-                  'text-2xl font-bold',
-                  isSuperDeal ? 'text-emerald-400' : 'text-white',
-                )}>
+                <p className={cn('text-2xl font-bold', isSuperDeal ? 'text-emerald-400' : 'text-white')}>
                   {formatPrice(flight.price)}
                 </p>
                 <p className="text-xs text-zinc-500">
                   {flight.tripType === 'round-trip' ? 'w obie strony' : 'w jedną stronę'}
                 </p>
               </div>
-              <Button size="sm" onClick={() => setModalOpen(true)} className="shrink-0">
+              <Button
+                size="sm"
+                onClick={(e) => { e.stopPropagation(); setModalOpen(true) }}
+                className="shrink-0"
+              >
                 Sprawdź lot
               </Button>
             </div>
@@ -129,20 +133,14 @@ export function FlightCard({ flight, index }: FlightCardProps) {
                 </Badge>
               )}
               {flight.tags.slice(0, 2).map((tag) => (
-                <Badge key={tag} variant="ghost" className="text-xs">
-                  {tag}
-                </Badge>
+                <Badge key={tag} variant="ghost" className="text-xs">{tag}</Badge>
               ))}
             </div>
           </div>
         </div>
       </motion.div>
 
-      <FlightModal
-        flight={flight}
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-      />
+      <FlightModal flight={flight} open={modalOpen} onClose={() => setModalOpen(false)} />
     </>
   )
 }

@@ -180,19 +180,19 @@ export function ClassicSearchForm() {
           </div>
 
           {flexMode ? (
-            <div className="grid grid-cols-2 gap-2">
-              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => (
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1">
+              {MONTHS.map((month, i) => (
                 <button
                   key={i}
                   onClick={() => setQuery({ flexibleMonth: i + 1 })}
                   className={cn(
-                    'rounded-lg border py-2 text-sm transition-all',
+                    'shrink-0 rounded-lg border px-3 py-2 text-sm transition-all whitespace-nowrap',
                     query.flexibleMonth === i + 1
                       ? 'border-cyan-500/50 bg-cyan-500/10 text-cyan-400'
                       : 'border-border text-zinc-400 hover:border-zinc-600 hover:text-white',
                   )}
                 >
-                  {MONTHS[i]}
+                  {month}
                 </button>
               ))}
             </div>

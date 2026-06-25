@@ -1,22 +1,36 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { SearchX, Plane } from 'lucide-react'
-import { FlightCard } from './FlightCard'
+import { FlightCard, flightItemVariants } from './FlightCard'
 import { useSearchStore } from '@/store/searchStore'
+
+const containerVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
+}
 
 function SkeletonCard() {
   return (
-    <div className="rounded-2xl border border-border bg-surface p-5 animate-pulse">
+    <div className="rounded-2xl border border-border bg-surface p-5">
       <div className="flex items-center gap-4">
-        <div className="h-10 w-10 rounded-xl bg-surface-3" />
+        <div className="h-10 w-10 rounded-xl bg-surface-3 animate-pulse shrink-0" />
         <div className="flex-1 space-y-2">
-          <div className="h-3 w-32 rounded bg-surface-3" />
-          <div className="h-2 w-20 rounded bg-surface-3" />
+          <div className="h-3 w-32 rounded bg-surface-3 animate-pulse" />
+          <div className="h-2 w-20 rounded bg-surface-3 animate-pulse" />
         </div>
-        <div className="h-8 w-24 rounded-lg bg-surface-3" />
-        <div className="h-10 w-28 rounded-lg bg-surface-3" />
+        <div className="hidden sm:block h-8 w-24 rounded-lg bg-surface-3 animate-pulse" />
+        <div className="h-10 w-28 rounded-lg bg-surface-3 animate-pulse" />
       </div>
-      <div className="mt-4 h-1.5 w-full rounded-full bg-surface-3" />
+      <div className="mt-4 h-1.5 w-full rounded-full bg-surface-3 animate-pulse" />
     </div>
+  )
+}
+
+// Invisible variant wrapper so skeleton cards also participate in stagger
+function SkeletonItem() {
+  return (
+    <motion.div variants={flightItemVariants}>
+      <SkeletonCard />
+    </motion.div>
   )
 }
 
@@ -26,11 +40,11 @@ export function FlightResults() {
   if (!hasSearched && !isSearching) return null
 
   return (
-    <section className="mx-auto max-w-4xl px-4 sm:px-6 pb-20">
-      <div className="mb-6 flex items-center justify-between">
+    <section className="mx-auto max-w-4xl px-4 sm:px-6 pb-12">
+      <div className="mb-5 flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-white">
-            {isSearching ? 'Szukam najlepszych lotów...' : `Znaleziono ${results.length} lotów`}
+            {isSearching ? 'Szukam najlepszych lotów…' : `Znaleziono ${results.length} lotów`}
           </h2>
           {!isSearching && hasSearched && (
             <p className="text-sm text-zinc-500 mt-0.5">
@@ -47,25 +61,27 @@ export function FlightResults() {
         {isSearching ? (
           <motion.div
             key="skeletons"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            exit={{ opacity: 0, transition: { duration: 0.1 } }}
             className="space-y-3"
           >
             {Array.from({ length: 4 }).map((_, i) => (
-              <SkeletonCard key={i} />
+              <SkeletonItem key={i} />
             ))}
           </motion.div>
         ) : results.length > 0 ? (
           <motion.div
             key="results"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            exit={{ opacity: 0, transition: { duration: 0.1 } }}
             className="space-y-3"
           >
-            {results.map((flight, i) => (
-              <FlightCard key={flight.id} flight={flight} index={i} />
+            {results.map((flight) => (
+              <FlightCard key={flight.id} flight={flight} />
             ))}
           </motion.div>
         ) : (
@@ -80,9 +96,7 @@ export function FlightResults() {
               <SearchX className="h-7 w-7 text-zinc-500" />
             </div>
             <div>
-              <p className="text-lg font-semibold text-white">
-                Nie znaleźliśmy tak taniego lotu
-              </p>
+              <p className="text-lg font-semibold text-white">Nie znaleźliśmy tak taniego lotu</p>
               <p className="text-sm text-zinc-500 mt-1 max-w-sm">
                 Ale sprawdź te alternatywy — obniż budżet lub wybierz elastyczne daty.
               </p>
