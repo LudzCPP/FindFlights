@@ -14,3 +14,10 @@ export function formatDuration(minutes: number): string {
 export function formatPrice(price: number, currency = 'PLN'): string {
   return `${price.toLocaleString('pl-PL')} ${currency}`
 }
+
+const MONTHS_PL = ['Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru']
+
+export function formatShortDate(dateStr: string): string {
+  const [, m, d] = dateStr.split('-').map(Number)
+  return `${d} ${MONTHS_PL[m - 1]}`
+}

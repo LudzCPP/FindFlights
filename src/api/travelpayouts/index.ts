@@ -57,7 +57,7 @@ async function fetchCheapPrices(
   const flights: Flight[] = []
   for (const [dest, byTransfer] of Object.entries(json.data)) {
     for (const [transfers, item] of Object.entries(byTransfer)) {
-      flights.push(adaptCheapPrice(dest, transfers, item, origin))
+      flights.push(adaptCheapPrice(dest, transfers, item, origin, json.currency))
     }
   }
   return flights

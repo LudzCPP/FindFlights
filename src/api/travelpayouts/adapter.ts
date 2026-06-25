@@ -53,7 +53,7 @@ const AIRLINE_COLORS: Record<string, string> = {
   VU: '#ff6600', RK: '#002060',
 }
 
-function resolveAirport(code: string): Airport {
+export function resolveAirport(code: string): Airport {
   if (AIRPORTS[code]) return AIRPORTS[code]
   const country = IATA_COUNTRY[code] ?? ''
   const flag    = COUNTRY_FLAGS[country] ?? '🌍'
@@ -95,6 +95,8 @@ function computeDealRating(price: number, origin: string, dest: string): DealRat
   return 'overpriced'
 }
 
+const EUR_TO_PLN = 4.25
+
 // ── From /v1/prices/cheap ─────────────────────────────────────────────────
 
 export function adaptCheapPrice(
@@ -102,12 +104,15 @@ export function adaptCheapPrice(
   transferCount: string,
   item: TpCheapPrice,
   originCode: string,
+  responseCurrency = 'PLN',
 ): Flight {
   const stops      = parseInt(transferCount, 10)
   const depTime    = extractTime(item.departure_at)
   const depDate    = item.departure_at.split('T')[0]
   const retDate    = item.return_at?.split('T')[0]
-  const pricePln   = item.price
+  const pricePln   = responseCurrency.toUpperCase() === 'EUR'
+    ? Math.round(item.price * EUR_TO_PLN)
+    : item.price
   const dealRating = computeDealRating(pricePln, originCode, destCode)
   const avgPrice   = Math.round(pricePln * (dealRating === 'overpriced' ? 0.9 : 1.18))
   const dropPln    = Math.max(0, avgPrice - pricePln)
@@ -152,11 +157,11 @@ export function adaptLatestPrice(item: TpLatestPrice): Flight {
     id:              `tp2-${item.origin}-${item.destination}-${item.depart_date}`,
     origin:          resolveAirport(item.origin),
     destination:     resolveAirport(item.destination),
-    airline:         resolveAirline('??'),       // v2 doesn't include airline
+    airline:         { code: 'TP', name: 'Różne linie', logoColor: '#64748b' },
     flightNumber:    '—',
-    departureTime:   '06:00',
-    arrivalTime:     '09:00',
-    durationMinutes: Math.round((item.distance / 800) * 60),  // rough estimate from km
+    departureTime:   '',   // v2 API provides date only, no departure time
+    arrivalTime:     '',
+    durationMinutes: Math.round((item.distance / 900) * 60),
     stops,
     stopoverCities:  [],
     price:           pricePln,

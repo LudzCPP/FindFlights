@@ -102,7 +102,7 @@ export function FlightResults() {
             </div>
             {IS_LIVE && (
               <p className="text-xs text-zinc-500 max-w-xs">
-                Sprawdź czy VITE_AMADEUS_CLIENT_ID i VITE_AMADEUS_CLIENT_SECRET są ustawione w .env.local i czy aplikacja jest wczytana od nowa.
+                Sprawdź czy VITE_TRAVELPAYOUTS_TOKEN jest poprawny w .env.local i uruchom ponownie <code className="text-zinc-400">npm run dev</code>.
               </p>
             )}
           </motion.div>

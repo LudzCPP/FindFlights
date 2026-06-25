@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { DealMeter } from './DealMeter'
 import { FlightModal } from './FlightModal'
-import { formatDuration, formatPrice, cn } from '@/lib/utils'
+import { formatDuration, formatPrice, formatShortDate, cn } from '@/lib/utils'
 import type { Flight } from '@/types'
 
 // Stagger item variant — initial/animate inherited from FlightResults container
@@ -66,12 +66,20 @@ export function FlightCard({ flight }: FlightCardProps) {
             {/* Route & times */}
             <div className="flex flex-1 items-center gap-3 min-w-0">
               <div className="text-center min-w-[52px]">
-                <p className="text-lg font-bold text-white">{flight.departureTime}</p>
+                {flight.departureTime ? (
+                  <p className="text-lg font-bold text-white">{flight.departureTime}</p>
+                ) : (
+                  <p className="text-sm font-semibold text-white leading-tight">
+                    {formatShortDate(flight.departureDate)}
+                  </p>
+                )}
                 <p className="text-xs text-zinc-400 font-medium">{flight.origin.code}</p>
               </div>
 
               <div className="flex flex-col items-center gap-0.5 flex-1 min-w-0">
-                <span className="text-xs text-zinc-600">{formatDuration(flight.durationMinutes)}</span>
+                <span className="text-xs text-zinc-600">
+                  {flight.durationMinutes > 0 ? formatDuration(flight.durationMinutes) : '—'}
+                </span>
                 <div className="relative w-full flex items-center">
                   <div className="h-px flex-1 bg-border" />
                   {flight.stops === 0 ? (
@@ -91,7 +99,11 @@ export function FlightCard({ flight }: FlightCardProps) {
               </div>
 
               <div className="text-center min-w-[52px]">
-                <p className="text-lg font-bold text-white">{flight.arrivalTime}</p>
+                {flight.arrivalTime ? (
+                  <p className="text-lg font-bold text-white">{flight.arrivalTime}</p>
+                ) : (
+                  <p className="text-lg font-bold text-zinc-600">—</p>
+                )}
                 <p className="text-xs text-zinc-400 font-medium">{flight.destination.code}</p>
               </div>
             </div>

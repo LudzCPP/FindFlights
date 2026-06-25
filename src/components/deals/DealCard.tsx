@@ -4,8 +4,33 @@ import { TrendingDown, ArrowRight } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { FlightModal } from '@/components/flights/FlightModal'
 import { formatPrice } from '@/lib/utils'
-import { MOCK_FLIGHTS } from '@/data/mockData'
-import type { Deal } from '@/types'
+import type { Deal, Flight } from '@/types'
+
+function dealToFlight(deal: Deal): Flight {
+  return {
+    id:              deal.id,
+    origin:          deal.origin,
+    destination:     deal.destination,
+    airline:         deal.airline,
+    flightNumber:    '—',
+    departureTime:   '06:00',
+    arrivalTime:     '09:00',
+    durationMinutes: 150,
+    stops:           0,
+    stopoverCities:  [],
+    price:           deal.price,
+    currency:        deal.currency,
+    cabin:           'economy',
+    tripType:        deal.tripType,
+    availableSeats:  Math.floor(Math.random() * 8) + 2,
+    dealRating:      deal.dealRating,
+    averagePrice30d: deal.averagePrice30d,
+    priceDropPln:    deal.priceDropPln,
+    tags:            deal.tags,
+    departureDate:   deal.departureDate,
+    returnDate:      deal.returnDate,
+  }
+}
 
 // Stagger item variant — initial/animate inherited from parent DealsGrid container
 const itemVariants = {
@@ -20,10 +45,7 @@ interface DealCardProps {
 export function DealCard({ deal }: DealCardProps) {
   const [modalOpen, setModalOpen] = useState(false)
 
-  const relatedFlight =
-    MOCK_FLIGHTS.find(
-      (f) => f.origin.code === deal.origin.code && f.destination.code === deal.destination.code,
-    ) ?? MOCK_FLIGHTS[0]
+  const relatedFlight = dealToFlight(deal)
 
   return (
     <>
