@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { TrendingDown, ArrowRight } from 'lucide-react'
+import { TrendingDown, ArrowRight, Calendar } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { FlightModal } from '@/components/flights/FlightModal'
-import { formatPrice } from '@/lib/utils'
+import { formatPrice, formatShortDate } from '@/lib/utils'
 import type { Deal, Flight } from '@/types'
 
 function dealToFlight(deal: Deal): Flight {
@@ -13,8 +13,8 @@ function dealToFlight(deal: Deal): Flight {
     destination:     deal.destination,
     airline:         deal.airline,
     flightNumber:    '—',
-    departureTime:   '06:00',
-    arrivalTime:     '09:00',
+    departureTime:   '',
+    arrivalTime:     '',
     durationMinutes: 150,
     stops:           0,
     stopoverCities:  [],
@@ -97,6 +97,18 @@ export function DealCard({ deal }: DealCardProps) {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Dates */}
+          <div className="flex items-center gap-1.5 text-xs text-zinc-400 border-t border-border pt-2.5">
+            <Calendar className="h-3 w-3 shrink-0 text-zinc-500" />
+            <span>
+              {formatShortDate(deal.departureDate)}
+              {deal.returnDate
+                ? <> <span className="text-zinc-600">→</span> {formatShortDate(deal.returnDate)}</>
+                : <span className="text-zinc-600 ml-1">(w jedną stronę)</span>
+              }
+            </span>
           </div>
 
           <div className="flex items-center justify-between">
