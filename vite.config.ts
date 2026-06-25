@@ -9,4 +9,15 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      // All /tp-api/* requests are forwarded to Travelpayouts, solving CORS in dev.
+      // Production: replace with a real backend proxy (Vercel Edge Function, etc.)
+      '/tp-api': {
+        target: 'https://api.travelpayouts.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/tp-api/, ''),
+      },
+    },
+  },
 })

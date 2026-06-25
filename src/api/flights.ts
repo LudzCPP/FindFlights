@@ -1,14 +1,14 @@
 import type { Flight, SearchQuery } from '@/types'
 import { MOCK_FLIGHTS } from '@/data/mockData'
-import { searchFlightsAmadeus } from './amadeus'
+import { searchFlightsTravelpayouts } from './travelpayouts'
 
-// Toggle via .env.local:  VITE_USE_MOCK=false  to hit Amadeus.
-// Credentials also required: VITE_AMADEUS_CLIENT_ID + VITE_AMADEUS_CLIENT_SECRET
+// Set VITE_USE_MOCK=false in .env.local to hit the Travelpayouts live API.
+// Also requires VITE_TRAVELPAYOUTS_TOKEN (free — travelpayouts.com/developer/api).
 export const IS_LIVE = import.meta.env.VITE_USE_MOCK === 'false'
 
 export async function searchFlights(query: SearchQuery): Promise<Flight[]> {
   if (!IS_LIVE) return simulateMockSearch(query)
-  return searchFlightsAmadeus(query)
+  return searchFlightsTravelpayouts(query)
 }
 
 function simulateMockSearch(query: SearchQuery): Promise<Flight[]> {

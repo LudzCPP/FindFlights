@@ -65,7 +65,7 @@ export function FlightResults() {
         {IS_LIVE && (
           <div className="flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/5 px-3 py-1">
             <Wifi className="h-3 w-3 text-cyan-400" />
-            <span className="text-xs font-medium text-cyan-400">Amadeus Live</span>
+            <span className="text-xs font-medium text-cyan-400">Travelpayouts Live</span>
           </div>
         )}
       </div>
