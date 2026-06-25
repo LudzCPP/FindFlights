@@ -1,9 +1,9 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VITE_API_BASE_URL: string
-  readonly VITE_API_KEY: string
-  readonly VITE_USE_MOCK: string
+  readonly VITE_USE_MOCK: string                // 'false' to enable live Amadeus calls
+  readonly VITE_AMADEUS_CLIENT_ID: string       // from developers.amadeus.com
+  readonly VITE_AMADEUS_CLIENT_SECRET: string   // from developers.amadeus.com
 }
 
 interface ImportMeta {

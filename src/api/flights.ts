@@ -1,29 +1,14 @@
-// Flight search adapter layer.
-// Set VITE_USE_MOCK=false in .env.local to route through a real provider.
-//
-// Amadeus sandbox setup:
-//   1. Register at developers.amadeus.com (free)
-//   2. Create an app → get client_id / client_secret
-//   3. Exchange credentials for a bearer token (POST /v1/security/oauth2/token)
-//   4. Set VITE_API_BASE_URL=https://test.api.amadeus.com
-//      and VITE_API_KEY=<bearer token>
-//
-// Kiwi.com Tequila alternative:
-//   VITE_API_BASE_URL=https://tequila.kiwi.com/v2
-//   VITE_API_KEY=<your Tequila API key>
-
 import type { Flight, SearchQuery } from '@/types'
 import { MOCK_FLIGHTS } from '@/data/mockData'
+import { searchFlightsAmadeus } from './amadeus'
 
-const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'
+// Toggle via .env.local:  VITE_USE_MOCK=false  to hit Amadeus.
+// Credentials also required: VITE_AMADEUS_CLIENT_ID + VITE_AMADEUS_CLIENT_SECRET
+export const IS_LIVE = import.meta.env.VITE_USE_MOCK === 'false'
 
 export async function searchFlights(query: SearchQuery): Promise<Flight[]> {
-  if (USE_MOCK) {
-    return simulateMockSearch(query)
-  }
-
-  // TODO: map SearchQuery → provider-specific params, call apiGet(), map response → Flight[]
-  throw new Error('Real API integration not yet implemented. Set VITE_USE_MOCK=false only after wiring the adapter.')
+  if (!IS_LIVE) return simulateMockSearch(query)
+  return searchFlightsAmadeus(query)
 }
 
 function simulateMockSearch(query: SearchQuery): Promise<Flight[]> {
@@ -42,6 +27,6 @@ function simulateMockSearch(query: SearchQuery): Promise<Flight[]> {
 
       if (results.length === 0) results = MOCK_FLIGHTS
       resolve(results.sort((a, b) => a.price - b.price))
-    }, 1400)
+    }, 1200)
   })
 }
